@@ -1,0 +1,39 @@
+-- user表
+CREATE TABLE user (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  avatar VARCHAR(100),
+  signature VARCHAR(100),
+  password VARCHAR(100)
+);
+
+-- video表
+CREATE TABLE video (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT,
+  play_url VARCHAR(100),
+  cover_url VARCHAR(100),
+  title TEXT,
+  create_date DATE,
+  FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
+-- comment表
+CREATE TABLE comment (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT,
+  video_id INT,
+  content TEXT,
+  create_date DATE,
+  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (video_id) REFERENCES video(id)
+);
+
+-- favorite表
+CREATE TABLE favorite (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT,
+  video_id INT,
+  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (video_id) REFERENCES video(id)
+);
