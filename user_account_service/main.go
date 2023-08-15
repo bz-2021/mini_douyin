@@ -37,6 +37,7 @@ func (s UserAccountServer) UserInfo(ctx context.Context, request *service.UserIn
 		User:       nil,
 	}, nil
 }
+
 func main() {
 	listen, err := net.Listen("tcp", ":8090")
 	if err != nil {
