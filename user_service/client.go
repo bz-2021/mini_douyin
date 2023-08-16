@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	api "github.com/MantoCoding/grpcDouyinDemo/api/client"
-	pb "github.com/MantoCoding/grpcDouyinDemo/user_service/user_grpc"
+	api "github.com/bz-2021/mini_douyin/api/client"
+	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

@@ -3,10 +3,10 @@ package user_service
 import (
 	"context"
 	"fmt"
-	"github.com/MantoCoding/grpcDouyinDemo/user_service/dao"
-	"github.com/MantoCoding/grpcDouyinDemo/user_service/pojo"
-	pb "github.com/MantoCoding/grpcDouyinDemo/user_service/user_grpc"
-	"github.com/MantoCoding/grpcDouyinDemo/utils"
+	"github.com/bz-2021/mini_douyin/user_service/dao"
+	"github.com/bz-2021/mini_douyin/user_service/pojo"
+	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
+	"github.com/bz-2021/mini_douyin/utils"
 	"gorm.io/gorm"
 )
 

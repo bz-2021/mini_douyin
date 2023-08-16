@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/MantoCoding/grpcDouyinDemo/user_service/user_grpc"
+	"github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"sync"

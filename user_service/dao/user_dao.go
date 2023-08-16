@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/MantoCoding/grpcDouyinDemo/utils"
+	"github.com/bz-2021/mini_douyin/utils"
 	"gorm.io/gorm"
 )
 

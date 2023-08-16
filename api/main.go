@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/MantoCoding/grpcDouyinDemo/api/pkg"
+	"github.com/bz-2021/mini_douyin/api/pkg"
 	"github.com/gin-gonic/gin"
 )
 

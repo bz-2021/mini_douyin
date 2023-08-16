@@ -1,4 +1,4 @@
-module github.com/MantoCoding/grpcDouyinDemo
+module github.com/bz-2021/mini_douyin
 
 go 1.20
 

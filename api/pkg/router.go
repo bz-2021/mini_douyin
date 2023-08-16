@@ -2,8 +2,8 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/MantoCoding/grpcDouyinDemo/user_service"
-	pb "github.com/MantoCoding/grpcDouyinDemo/user_service/user_grpc"
+	"github.com/bz-2021/mini_douyin/user_service"
+	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
