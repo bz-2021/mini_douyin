@@ -7,6 +7,7 @@ import (
 	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/bz-2021/mini_douyin/utils"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type UserLoginService struct {
@@ -31,7 +32,6 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 
 	username := req.Username
 	password := req.Password
-	token, err := utils.GenerateJWT(username)
 
 	resp = new(pb.UserLoginResponse)
 
@@ -50,6 +50,7 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 		resp.StatusMsg = &utils.WrongUsernameOrPassword
 		return
 	}
+	token, err := utils.GenerateJWT(strconv.FormatInt(user.Id, 10))
 
 	// 密码错误，登陆失败
 	if !utils.ComparePasswords(user.Password, password) {
@@ -102,6 +103,44 @@ func (u *UserLoginService) Register(ctx context.Context, req *pb.UserRegisterReq
 	return
 }
 
-func (u *UserLoginService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
-	return nil, nil
+func (u *UserLoginService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (resp *pb.UserInfoResponse, err error) {
+	token := req.Token
+	userId := req.UserId
+
+	myStringId, err := utils.VerifyJWT(token)
+	resp = new(pb.UserInfoResponse)
+
+	if err != nil {
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.PermissionDenied
+		return
+	}
+	myId, err := strconv.ParseInt(myStringId, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := u.getUserById(ctx, myId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.PermissionDenied
+		return
+	}
+	thisUser, err := u.getUserById(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	resp.User = &pb.User{
+		Id:        thisUser.Id,
+		Name:      thisUser.Name,
+		Avatar:    &thisUser.Avatar,
+		Signature: &thisUser.Signature,
+	}
+	resp.StatusCode = 0
+	resp.StatusMsg = &utils.Succeed
+	return
+
 }

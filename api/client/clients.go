@@ -12,23 +12,23 @@ import (
 var C Clients
 
 type Clients struct {
-	UserLoginClient user_grpc.ServiceClient
+	ServiceClient user_grpc.ServiceClient
 
 	lock sync.Mutex
 }
 
-func (c *Clients) GetUserLoginClient() user_grpc.ServiceClient {
+func (c *Clients) GetServiceClient() user_grpc.ServiceClient {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	if c.UserLoginClient == nil {
+	if c.ServiceClient == nil {
 		addr := ":8083"
 		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			panic("创建连接失败")
 		}
 		client := user_grpc.NewServiceClient(conn)
-		c.UserLoginClient = client
+		c.ServiceClient = client
 	}
-	return c.UserLoginClient
+	return c.ServiceClient
 }

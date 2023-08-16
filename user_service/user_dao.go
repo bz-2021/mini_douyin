@@ -30,3 +30,14 @@ func (u *UserLoginService) getUserByUsername(ctx context.Context, username strin
 	}
 	return
 }
+
+func (u *UserLoginService) getUserById(ctx context.Context, id int64) (user *pojo.User, err error) {
+	user = &pojo.User{}
+	db := u.DB.WithContext(ctx)
+	db = db.Table("user")
+	db = db.Where("id = ?", id).Find(user)
+	if db.Error != nil {
+		return nil, db.Error
+	}
+	return
+}
