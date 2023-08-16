@@ -31,7 +31,39 @@ func UserLoginAction() gin.HandlerFunc {
 		// 处理登录响应
 		if result.StatusMsg != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"status_code": 0,
+				"status_code": result.StatusCode,
+				"status_msg":  result.StatusMsg,
+				"user_id":     result.UserId,
+				"token":       result.Token,
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status_msg": result.StatusMsg})
+		}
+		fmt.Println(result, err)
+	}
+
+}
+
+func UserRegisterAction() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 客户端
+		client := api.C.GetServiceClient()
+
+		// 解析请求参数
+		var req pb.UserRegisterRequest
+		req.Username = c.Query("username")
+		req.Password = c.Query("password")
+
+		// 调用gRPC服务
+		result, err := client.Register(context.Background(), &req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status_msg": "Failed to call gRPC user_service"})
+			return
+		}
+		// 处理登录响应
+		if result.StatusMsg != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"status_code": result.StatusCode,
 				"status_msg":  result.StatusMsg,
 				"user_id":     result.UserId,
 				"token":       result.Token,
@@ -63,7 +95,7 @@ func UserInfoAction() gin.HandlerFunc {
 		// 处理登录响应
 		if result.StatusMsg != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"status_code": 0,
+				"status_code": result.StatusCode,
 				"status_msg":  result.StatusMsg,
 				"user": map[string]any{
 					"id":        result.User.Id,

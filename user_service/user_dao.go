@@ -41,3 +41,33 @@ func (u *UserLoginService) getUserById(ctx context.Context, id int64) (user *poj
 	}
 	return
 }
+
+func (u *UserLoginService) insertUser(ctx context.Context, username string, password string) error {
+	// 向表中插入数据
+	encodedPassword, err := utils.HashAndSalt(password)
+	if err != nil {
+		return err
+	}
+
+	db := u.DB.WithContext(ctx)
+	db = db.Table("user")
+	db.Create(&pojo.User{
+		Name:     username,
+		Password: encodedPassword,
+	})
+
+	if db.Error != nil {
+		return db.Error
+	}
+	return nil
+}
+
+func (u *UserLoginService) maxId(ctx context.Context) (int64, error) {
+	db := u.DB.WithContext(ctx)
+	var maxID int64
+	result := db.Table("user").Select("MAX(id)").Scan(&maxID)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return maxID, nil
+}

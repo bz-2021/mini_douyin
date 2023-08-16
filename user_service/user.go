@@ -3,7 +3,6 @@ package user_service
 import (
 	"context"
 	"fmt"
-	"github.com/bz-2021/mini_douyin/user_service/pojo"
 	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/bz-2021/mini_douyin/utils"
 	"gorm.io/gorm"
@@ -45,7 +44,7 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 	//用户登录验证逻辑
 	user, err := u.getUserByUsername(ctx, username)
 	fmt.Println(user)
-	if err != nil || user == nil {
+	if err != nil || len(user.Name) == 0 {
 		resp.StatusCode = 403
 		resp.StatusMsg = &utils.WrongUsernameOrPassword
 		return
@@ -84,22 +83,36 @@ func (u *UserLoginService) Register(ctx context.Context, req *pb.UserRegisterReq
 		return
 	}
 
-	// 向表中插入数据
-	encodedPassword, err := utils.HashAndSalt(password)
+	user, err := u.getUserByUsername(ctx, username)
+	if len(user.Name) != 0 || err != nil {
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.UsernameAlreadyExist
+		fmt.Println(err)
+		return
+	}
+
+	err = u.insertUser(ctx, username, password)
 	if err != nil {
-		panic("密码加密失败")
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.InternalServerErr
+		return
 	}
-
-	db := u.DB.WithContext(ctx)
-	db = db.Table("user")
-	db.Create(&pojo.User{
-		Name:     username,
-		Password: encodedPassword,
-	})
-
-	if db.Error != nil {
-
+	maxID, err := u.maxId(ctx)
+	if err != nil {
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.InternalServerErr
+		return
 	}
+	token, err := utils.GenerateJWT(strconv.FormatInt(maxID, 10))
+	if err != nil {
+		resp.StatusCode = 1
+		resp.StatusMsg = &utils.InternalServerErr
+		return
+	}
+	resp.Token = token
+	resp.UserId = maxID
+	resp.StatusCode = 0
+	resp.StatusMsg = &utils.Succeed
 	return
 }
 

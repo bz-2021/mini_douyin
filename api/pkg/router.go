@@ -34,6 +34,7 @@ func InitRouter(r *gin.Engine) {
 	//获取请求参数，调用grpc客户端
 	r.POST("/douyin/user/login/", user_service.UserLoginAction())
 	r.GET("/douyin/user/", user_service.UserInfoAction())
+	r.POST("/douyin/user/register/", user_service.UserRegisterAction())
 
 	// basic apis
 	//apiRouter.GET("/feed/", controller.Feed)
