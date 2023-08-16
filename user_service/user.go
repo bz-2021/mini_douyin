@@ -3,7 +3,6 @@ package user_service
 import (
 	"context"
 	"fmt"
-	"github.com/bz-2021/mini_douyin/user_service/dao"
 	"github.com/bz-2021/mini_douyin/user_service/pojo"
 	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/bz-2021/mini_douyin/utils"
@@ -16,7 +15,7 @@ type UserLoginService struct {
 }
 
 func NewUserLoginService() *UserLoginService {
-	db, err := dao.GetDB()
+	db, err := GetDB()
 	if err != nil {
 		panic("NewUserLoginService失败")
 	}
@@ -34,8 +33,6 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 	password := req.Password
 	token, err := utils.GenerateJWT(username)
 
-	fmt.Println(utils.HashAndSalt(password))
-
 	resp = new(pb.UserLoginResponse)
 
 	// 参数为空，请求失败
@@ -46,14 +43,11 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 	}
 
 	//用户登录验证逻辑
-	user := &pojo.User{}
-
-	db := u.DB.WithContext(ctx)
-	db = db.Table("user")
-	db = db.Where("name = ?", username).Find(user)
-	if db.Error != nil {
-		resp.StatusCode = 500
-		resp.StatusMsg = &utils.InternalServerErr
+	user, err := u.getUserByUsername(ctx, username)
+	fmt.Println(user)
+	if err != nil || user == nil {
+		resp.StatusCode = 403
+		resp.StatusMsg = &utils.WrongUsernameOrPassword
 		return
 	}
 
@@ -61,7 +55,7 @@ func (u *UserLoginService) Login(ctx context.Context, req *pb.UserLoginRequest) 
 	if !utils.ComparePasswords(user.Password, password) {
 		fmt.Println(user.Password, password)
 		resp.StatusCode = 403
-		resp.StatusMsg = &utils.PermissionDenied
+		resp.StatusMsg = &utils.WrongUsernameOrPassword
 		return
 	}
 
