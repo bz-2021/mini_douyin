@@ -1,0 +1,23 @@
+syntax = "proto3";
+package user_login_grpc;
+
+option go_package = "/user_grpc";
+
+//定义rpc服务
+service LoginService {
+  // 定义函数
+  rpc Login (douyin_user_login_request) returns (douyin_user_login_response) {}
+}
+
+
+message douyin_user_login_request {
+  string username = 1; // 登录用户名
+  string password = 2; // 登录密码
+}
+
+message douyin_user_login_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  string status_msg = 2; // 返回状态描述
+  int64 user_id = 3; // 用户id
+  string token = 4; // 用户鉴权token
+}

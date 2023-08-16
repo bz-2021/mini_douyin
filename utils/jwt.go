@@ -5,13 +5,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-package utils
-
-import (
-"errors"
-"github.com/dgrijalva/jwt-go"
-)
-
 // 用于签发和验证JWT
 const secretKey = "bz2021ABCDefgHIJKlmn987QMWNEB11"
 
@@ -51,4 +44,3 @@ func VerifyJWT(tokenString string) (string, error) {
 
 	return userID, nil
 }
-
