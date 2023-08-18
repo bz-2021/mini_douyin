@@ -8,6 +8,7 @@ package user
 
 import (
 	context "context"
+	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,9 +29,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceClient interface {
-	Register(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterResponse, error)
-	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
-	UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
+	Register(ctx context.Context, in *service.UserRegisterRequest, opts ...grpc.CallOption) (*service.UserRegisterResponse, error)
+	Login(ctx context.Context, in *service.UserLoginRequest, opts ...grpc.CallOption) (*service.UserLoginResponse, error)
+	UserInfo(ctx context.Context, in *service.UserInfoRequest, opts ...grpc.CallOption) (*service.UserInfoResponse, error)
 }
 
 type serviceClient struct {
@@ -41,8 +42,8 @@ func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
 	return &serviceClient{cc}
 }
 
-func (c *serviceClient) Register(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterResponse, error) {
-	out := new(UserRegisterResponse)
+func (c *serviceClient) Register(ctx context.Context, in *service.UserRegisterRequest, opts ...grpc.CallOption) (*service.UserRegisterResponse, error) {
+	out := new(service.UserRegisterResponse)
 	err := c.cc.Invoke(ctx, Service_Register_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +51,8 @@ func (c *serviceClient) Register(ctx context.Context, in *UserRegisterRequest, o
 	return out, nil
 }
 
-func (c *serviceClient) Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error) {
-	out := new(UserLoginResponse)
+func (c *serviceClient) Login(ctx context.Context, in *service.UserLoginRequest, opts ...grpc.CallOption) (*service.UserLoginResponse, error) {
+	out := new(service.UserLoginResponse)
 	err := c.cc.Invoke(ctx, Service_Login_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +60,8 @@ func (c *serviceClient) Login(ctx context.Context, in *UserLoginRequest, opts ..
 	return out, nil
 }
 
-func (c *serviceClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
-	out := new(UserInfoResponse)
+func (c *serviceClient) UserInfo(ctx context.Context, in *service.UserInfoRequest, opts ...grpc.CallOption) (*service.UserInfoResponse, error) {
+	out := new(service.UserInfoResponse)
 	err := c.cc.Invoke(ctx, Service_UserInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +73,9 @@ func (c *serviceClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts 
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility
 type ServiceServer interface {
-	Register(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error)
-	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
-	UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error)
+	Register(context.Context, *service.UserRegisterRequest) (*service.UserRegisterResponse, error)
+	Login(context.Context, *service.UserLoginRequest) (*service.UserLoginResponse, error)
+	UserInfo(context.Context, *service.UserInfoRequest) (*service.UserInfoResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -82,13 +83,13 @@ type ServiceServer interface {
 type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedServiceServer) Register(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error) {
+func (UnimplementedServiceServer) Register(context.Context, *service.UserRegisterRequest) (*service.UserRegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedServiceServer) Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
+func (UnimplementedServiceServer) Login(context.Context, *service.UserLoginRequest) (*service.UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedServiceServer) UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error) {
+func (UnimplementedServiceServer) UserInfo(context.Context, *service.UserInfoRequest) (*service.UserInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
@@ -105,7 +106,7 @@ func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
 }
 
 func _Service_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRegisterRequest)
+	in := new(service.UserRegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -117,13 +118,13 @@ func _Service_Register_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Service_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).Register(ctx, req.(*UserRegisterRequest))
+		return srv.(ServiceServer).Register(ctx, req.(*service.UserRegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Service_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserLoginRequest)
+	in := new(service.UserLoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -135,13 +136,13 @@ func _Service_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: Service_Login_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).Login(ctx, req.(*UserLoginRequest))
+		return srv.(ServiceServer).Login(ctx, req.(*service.UserLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Service_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserInfoRequest)
+	in := new(service.UserInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +154,7 @@ func _Service_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Service_UserInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).UserInfo(ctx, req.(*UserInfoRequest))
+		return srv.(ServiceServer).UserInfo(ctx, req.(*service.UserInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

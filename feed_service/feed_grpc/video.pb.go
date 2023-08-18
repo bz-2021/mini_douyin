@@ -4,10 +4,9 @@
 // 	protoc        v4.23.4
 // source: video.proto
 
-package video
+package service
 
 import (
-	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/user"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -26,14 +25,14 @@ type Video struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id            int64      `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                            // 视频唯一标识
-	Author        *user.User `protobuf:"bytes,2,opt,name=author,proto3" json:"author,omitempty"`                                     // 视频作者信息
-	PlayUrl       string     `protobuf:"bytes,3,opt,name=play_url,json=playUrl,proto3" json:"play_url,omitempty"`                    // 视频播放地址
-	CoverUrl      string     `protobuf:"bytes,4,opt,name=cover_url,json=coverUrl,proto3" json:"cover_url,omitempty"`                 // 视频封面地址
-	FavoriteCount int64      `protobuf:"varint,5,opt,name=favorite_count,json=favoriteCount,proto3" json:"favorite_count,omitempty"` // 视频的点赞总数
-	CommentCount  int64      `protobuf:"varint,6,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`    // 视频的评论总数
-	IsFavorite    bool       `protobuf:"varint,7,opt,name=is_favorite,json=isFavorite,proto3" json:"is_favorite,omitempty"`          // true-已点赞，false-未点赞
-	Title         string     `protobuf:"bytes,8,opt,name=title,proto3" json:"title,omitempty"`                                       // 视频标题
+	Id            int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                            // 视频唯一标识
+	Author        *User  `protobuf:"bytes,2,opt,name=author,proto3" json:"author,omitempty"`                                     // 视频作者信息
+	PlayUrl       string `protobuf:"bytes,3,opt,name=play_url,json=playUrl,proto3" json:"play_url,omitempty"`                    // 视频播放地址
+	CoverUrl      string `protobuf:"bytes,4,opt,name=cover_url,json=coverUrl,proto3" json:"cover_url,omitempty"`                 // 视频封面地址
+	FavoriteCount int64  `protobuf:"varint,5,opt,name=favorite_count,json=favoriteCount,proto3" json:"favorite_count,omitempty"` // 视频的点赞总数
+	CommentCount  int64  `protobuf:"varint,6,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`    // 视频的评论总数
+	IsFavorite    bool   `protobuf:"varint,7,opt,name=is_favorite,json=isFavorite,proto3" json:"is_favorite,omitempty"`          // true-已点赞，false-未点赞
+	Title         string `protobuf:"bytes,8,opt,name=title,proto3" json:"title,omitempty"`                                       // 视频标题
 }
 
 func (x *Video) Reset() {
@@ -75,7 +74,7 @@ func (x *Video) GetId() int64 {
 	return 0
 }
 
-func (x *Video) GetAuthor() *user.User {
+func (x *Video) GetAuthor() *User {
 	if x != nil {
 		return x.Author
 	}
@@ -590,7 +589,7 @@ var file_video_proto_goTypes = []interface{}{
 	(*PublishActionResponse)(nil), // 4: video.PublishActionResponse
 	(*PublishListRequest)(nil),    // 5: video.PublishListRequest
 	(*PublishListResponse)(nil),   // 6: video.PublishListResponse
-	(*user.User)(nil),             // 7: user.User
+	(*User)(nil),                  // 7: user.User
 }
 var file_video_proto_depIdxs = []int32{
 	7, // 0: video.Video.author:type_name -> user.User
@@ -614,7 +613,7 @@ func file_video_proto_init() {
 	if File_video_proto != nil {
 		return
 	}
-	user.file_user_proto_init()
+	file_user_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_video_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Video); i {

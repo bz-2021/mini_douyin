@@ -8,6 +8,7 @@ package video
 
 import (
 	context "context"
+	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,9 +29,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceClient interface {
-	PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
-	PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error)
-	FeedAction(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
+	PublishAction(ctx context.Context, in *service.PublishActionRequest, opts ...grpc.CallOption) (*service.PublishActionResponse, error)
+	PublishList(ctx context.Context, in *service.PublishListRequest, opts ...grpc.CallOption) (*service.PublishListResponse, error)
+	FeedAction(ctx context.Context, in *service.FeedRequest, opts ...grpc.CallOption) (*service.FeedResponse, error)
 }
 
 type serviceClient struct {
@@ -41,8 +42,8 @@ func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
 	return &serviceClient{cc}
 }
 
-func (c *serviceClient) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
-	out := new(PublishActionResponse)
+func (c *serviceClient) PublishAction(ctx context.Context, in *service.PublishActionRequest, opts ...grpc.CallOption) (*service.PublishActionResponse, error) {
+	out := new(service.PublishActionResponse)
 	err := c.cc.Invoke(ctx, Service_PublishAction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +51,8 @@ func (c *serviceClient) PublishAction(ctx context.Context, in *PublishActionRequ
 	return out, nil
 }
 
-func (c *serviceClient) PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error) {
-	out := new(PublishListResponse)
+func (c *serviceClient) PublishList(ctx context.Context, in *service.PublishListRequest, opts ...grpc.CallOption) (*service.PublishListResponse, error) {
+	out := new(service.PublishListResponse)
 	err := c.cc.Invoke(ctx, Service_PublishList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +60,8 @@ func (c *serviceClient) PublishList(ctx context.Context, in *PublishListRequest,
 	return out, nil
 }
 
-func (c *serviceClient) FeedAction(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
-	out := new(FeedResponse)
+func (c *serviceClient) FeedAction(ctx context.Context, in *service.FeedRequest, opts ...grpc.CallOption) (*service.FeedResponse, error) {
+	out := new(service.FeedResponse)
 	err := c.cc.Invoke(ctx, Service_FeedAction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +73,9 @@ func (c *serviceClient) FeedAction(ctx context.Context, in *FeedRequest, opts ..
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility
 type ServiceServer interface {
-	PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error)
-	PublishList(context.Context, *PublishListRequest) (*PublishListResponse, error)
-	FeedAction(context.Context, *FeedRequest) (*FeedResponse, error)
+	PublishAction(context.Context, *service.PublishActionRequest) (*service.PublishActionResponse, error)
+	PublishList(context.Context, *service.PublishListRequest) (*service.PublishListResponse, error)
+	FeedAction(context.Context, *service.FeedRequest) (*service.FeedResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -82,13 +83,13 @@ type ServiceServer interface {
 type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedServiceServer) PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error) {
+func (UnimplementedServiceServer) PublishAction(context.Context, *service.PublishActionRequest) (*service.PublishActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishAction not implemented")
 }
-func (UnimplementedServiceServer) PublishList(context.Context, *PublishListRequest) (*PublishListResponse, error) {
+func (UnimplementedServiceServer) PublishList(context.Context, *service.PublishListRequest) (*service.PublishListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishList not implemented")
 }
-func (UnimplementedServiceServer) FeedAction(context.Context, *FeedRequest) (*FeedResponse, error) {
+func (UnimplementedServiceServer) FeedAction(context.Context, *service.FeedRequest) (*service.FeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FeedAction not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
@@ -105,7 +106,7 @@ func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
 }
 
 func _Service_PublishAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishActionRequest)
+	in := new(service.PublishActionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -117,13 +118,13 @@ func _Service_PublishAction_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: Service_PublishAction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).PublishAction(ctx, req.(*PublishActionRequest))
+		return srv.(ServiceServer).PublishAction(ctx, req.(*service.PublishActionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Service_PublishList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishListRequest)
+	in := new(service.PublishListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -135,13 +136,13 @@ func _Service_PublishList_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: Service_PublishList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).PublishList(ctx, req.(*PublishListRequest))
+		return srv.(ServiceServer).PublishList(ctx, req.(*service.PublishListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Service_FeedAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FeedRequest)
+	in := new(service.FeedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +154,7 @@ func _Service_FeedAction_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Service_FeedAction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).FeedAction(ctx, req.(*FeedRequest))
+		return srv.(ServiceServer).FeedAction(ctx, req.(*service.FeedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
