@@ -2,8 +2,10 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/bz-2021/mini_douyin/feed_service"
+	pb "github.com/bz-2021/mini_douyin/feed_service/feed_grpc/user"
+	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/video"
 	"github.com/bz-2021/mini_douyin/user_service"
-	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
@@ -31,10 +33,30 @@ func InitRouter(r *gin.Engine) {
 		}
 	}()
 
+	go func() {
+		// 创建gRPC服务
+		grpcServer := grpc.NewServer()
+
+		// 注册LoginService服务
+		//loginSrv := &user_service.UserLoginService{db: db} // 传入GORM数据库连接
+		video.RegisterServiceServer(grpcServer, feed_service.NewFeedService())
+		fmt.Println("grpc server running : 8084 ")
+
+		listen, err := net.Listen("tcp", ":8084")
+		if err != nil {
+			grpclog.Fatalf("Failed to listen: %v", err)
+		}
+
+		if err := grpcServer.Serve(listen); err != nil {
+
+		}
+	}()
+
 	//获取请求参数，调用grpc客户端
 	r.POST("/douyin/user/login/", user_service.UserLoginAction())
 	r.GET("/douyin/user/", user_service.UserInfoAction())
 	r.POST("/douyin/user/register/", user_service.UserRegisterAction())
+	r.GET("/douyin/feed/", feed_service.FeedAction())
 
 	// basic apis
 	//apiRouter.GET("/feed/", controller.Feed)

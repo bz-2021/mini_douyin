@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	api "github.com/bz-2021/mini_douyin/api/client"
-	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
+	pb "github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -98,10 +98,17 @@ func UserInfoAction() gin.HandlerFunc {
 				"status_code": result.StatusCode,
 				"status_msg":  result.StatusMsg,
 				"user": map[string]any{
-					"id":        result.User.Id,
-					"name":      result.User.Name,
-					"avatar":    result.User.Avatar,
-					"signature": result.User.Signature,
+					"id":               result.User.Id,
+					"name":             result.User.Name,
+					"avatar":           result.User.Avatar,
+					"signature":        result.User.Signature,
+					"is_follow":        false,
+					"follow_count":     result.User.FollowCount,
+					"follower_count":   result.User.FollowerCount,
+					"background_image": result.User.BackgroundImage,
+					"total_favorited":  result.User.TotalFavorited,
+					"work_count":       result.User.WorkCount,
+					"favorite_count":   result.User.FavoriteCount,
 				},
 			})
 		} else {

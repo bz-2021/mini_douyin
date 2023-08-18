@@ -3,14 +3,15 @@ package user_service
 import (
 	"context"
 	"fmt"
-	pb "github.com/bz-2021/mini_douyin/user_service/user_grpc"
+	pb "github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
+	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/user"
 	"github.com/bz-2021/mini_douyin/utils"
 	"gorm.io/gorm"
 	"strconv"
 )
 
 type UserLoginService struct {
-	pb.UnimplementedServiceServer
+	user.UnimplementedServiceServer
 	DB *gorm.DB
 }
 
@@ -147,10 +148,17 @@ func (u *UserLoginService) UserInfo(ctx context.Context, req *pb.UserInfoRequest
 		return nil, err
 	}
 	resp.User = &pb.User{
-		Id:        thisUser.Id,
-		Name:      thisUser.Name,
-		Avatar:    &thisUser.Avatar,
-		Signature: &thisUser.Signature,
+		Id:              thisUser.Id,
+		Name:            thisUser.Name,
+		FollowCount:     int64(thisUser.FollowCount),
+		FollowerCount:   int64(thisUser.FollowerCount),
+		IsFollow:        false,
+		Avatar:          &thisUser.Avatar,
+		BackgroundImage: &thisUser.BackgroundImage,
+		Signature:       &thisUser.Signature,
+		TotalFavorited:  int64(thisUser.TotalFavorite),
+		WorkCount:       int64(thisUser.WorkCount),
+		FavoriteCount:   int64(thisUser.FavoriteCount),
 	}
 	resp.StatusCode = 0
 	resp.StatusMsg = &utils.Succeed
