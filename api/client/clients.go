@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/user"
 	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/video"
+	favorite "github.com/bz-2021/mini_douyin/interaction_service/favorite/favorite_grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"sync"
@@ -13,8 +14,9 @@ import (
 var C Clients
 
 type Clients struct {
-	ServiceClient user.ServiceClient
-	FeedClient    video.ServiceClient
+	ServiceClient  user.ServiceClient
+	FeedClient     video.ServiceClient
+	FavoriteClient favorite.ServiceClient
 
 	lock sync.Mutex
 }
@@ -49,4 +51,20 @@ func (c *Clients) GetFeedClient() video.ServiceClient {
 		c.FeedClient = client
 	}
 	return c.FeedClient
+}
+
+func (c *Clients) GetFavoriteClient() favorite.ServiceClient {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	if c.FavoriteClient == nil {
+		addr := ":8085"
+		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			panic("创建连接失败")
+		}
+		client := favorite.NewServiceClient(conn)
+		c.FavoriteClient = client
+	}
+	return c.FavoriteClient
 }

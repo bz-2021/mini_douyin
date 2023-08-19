@@ -1,9 +1,9 @@
 syntax = "proto3";
 //import "user.proto";
 
-package comment_service;
+package comment;
 // 这部分的内容是关于最后生成的go文件是处在哪个目录哪个包中，代表在当前目录生成，service代表了生成的go文件的包名是service
-option go_package = ".;github.com/bz-2021/mini_douyin/interaction_service/comment;";
+option go_package = ".;service;";
 
 service Service {
   rpc CommentAction(CommentActionRequest) returns(CommentActionResponse);

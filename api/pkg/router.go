@@ -5,6 +5,8 @@ import (
 	"github.com/bz-2021/mini_douyin/feed_service"
 	pb "github.com/bz-2021/mini_douyin/feed_service/feed_grpc/user"
 	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/video"
+	"github.com/bz-2021/mini_douyin/interaction_service/favorite"
+	favorite "github.com/bz-2021/mini_douyin/interaction_service/favorite/favorite_grpc"
 	"github.com/bz-2021/mini_douyin/user_service"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -14,12 +16,12 @@ import (
 
 func InitRouter(r *gin.Engine) {
 
+	//LoginService
 	go func() {
 		// 创建gRPC服务
 		grpcServer := grpc.NewServer()
 
 		// 注册LoginService服务
-		//loginSrv := &user_service.UserLoginService{db: db} // 传入GORM数据库连接
 		pb.RegisterServiceServer(grpcServer, user_service.NewUserLoginService())
 		fmt.Println("grpc server running : 8083 ")
 
@@ -33,16 +35,35 @@ func InitRouter(r *gin.Engine) {
 		}
 	}()
 
+	//FeedService
 	go func() {
 		// 创建gRPC服务
 		grpcServer := grpc.NewServer()
 
-		// 注册LoginService服务
-		//loginSrv := &user_service.UserLoginService{db: db} // 传入GORM数据库连接
+		// 注册FeedService服务
 		video.RegisterServiceServer(grpcServer, feed_service.NewFeedService())
 		fmt.Println("grpc server running : 8084 ")
 
 		listen, err := net.Listen("tcp", ":8084")
+		if err != nil {
+			grpclog.Fatalf("Failed to listen: %v", err)
+		}
+
+		if err := grpcServer.Serve(listen); err != nil {
+
+		}
+	}()
+
+	//FavoriteService
+	go func() {
+		// 创建gRPC服务
+		grpcServer := grpc.NewServer()
+
+		// 注册FavoriteService服务
+		favorite.RegisterServiceServer(grpcServer, favorite_service.NewFavoriteService())
+		fmt.Println("grpc server running : 8085 ")
+
+		listen, err := net.Listen("tcp", ":8085")
 		if err != nil {
 			grpclog.Fatalf("Failed to listen: %v", err)
 		}
@@ -64,7 +85,7 @@ func InitRouter(r *gin.Engine) {
 
 	//favorite apis
 	//r.GET("/douyin/favorite/list/", favorite_service.GetFavoriteList())
-	//r.POST("/douyin/favorite/action/", favorite_service.PostFavoriteAction())
+	r.POST("/douyin/favorite/action/", favorite_service.PostFavoriteAction())
 
 	//comment apis
 	//r.GET("/douyin/comment/list/", comment_service.GetCommentList())
