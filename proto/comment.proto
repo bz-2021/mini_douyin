@@ -1,43 +1,63 @@
 syntax = "proto3";
-import "user.proto";
+//import "user.proto";
 
-package comment;
+package comment_service;
 // 这部分的内容是关于最后生成的go文件是处在哪个目录哪个包中，代表在当前目录生成，service代表了生成的go文件的包名是service
-option go_package = ".;service;";
+option go_package = ".;github.com/bz-2021/mini_douyin/interaction_service/comment;";
 
 service Service {
   rpc CommentAction(CommentActionRequest) returns(CommentActionResponse);
   rpc CommentList(CommentListRequest) returns(CommentListResponse);
 }
 
+//评论实体
 message Comment {
   int64 id = 1; // 视频评论id
-  user.User user = 2; // 评论用户信息
+  User user = 2; // 评论用户信息
   string content = 3; // 评论内容
   string create_date = 4; // 评论发布日期，格式 mm-dd
 }
 
+//评论操作请求
 message CommentActionRequest {
   string token = 1; // 用户鉴权token
   int64 video_id = 2; // 视频id
   int32 action_type = 3; // 1-发布评论，2-删除评论
-  optional string comment_text = 4; // 用户填写的评论内容，在action_type=1的时候使用
-  optional int64 comment_id = 5; // 要删除的评论id，在action_type=2的时候使用
+  string comment_text = 4; // 用户填写的评论内容，在action_type=1的时候使用
+  int64 comment_id = 5; // 要删除的评论id，在action_type=2的时候使用
 }
 
+//评论操作响应
 message CommentActionResponse {
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
   optional string status_msg = 2; // 返回状态描述
-  optional Comment comment = 3; // 评论成功返回评论内容，不需要重新拉取整个列表
+  Comment comment = 3; // 评论成功返回评论内容，不需要重新拉取整个列表
 }
 
+//评论列表请求
 message CommentListRequest {
   string token = 1; // 用户鉴权token
   int64 video_id = 2; // 视频id
 }
 
+//评论列表响应
 message CommentListResponse {
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
-  optional string status_msg = 2; // 返回状态描述
+  string status_msg = 2; // 返回状态描述
   repeated Comment comment_list = 3; // 评论列表
+}
+
+//用户实体
+message User {
+  int64 id = 1; // 用户id
+  string name = 2; // 用户名称
+  int64 follow_count = 3; // 关注总数
+  int64 follower_count = 4; // 粉丝总数
+  bool is_follow = 5; // true-已关注，false-未关注
+  optional string avatar = 6; //用户头像
+  optional string background_image = 7; //用户个人页顶部大图
+  optional string signature = 8; //个人简介
+  int64 total_favorited = 9; //获赞数量
+  int64 work_count = 10; //作品数量
+  int64 favorite_count = 11; //点赞数量
 }

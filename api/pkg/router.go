@@ -53,10 +53,22 @@ func InitRouter(r *gin.Engine) {
 	}()
 
 	//获取请求参数，调用grpc客户端
+
+	//视频feed流 api
+	r.GET("/douyin/feed/", feed_service.FeedAction())
+
+	//user apis
 	r.POST("/douyin/user/login/", user_service.UserLoginAction())
 	r.GET("/douyin/user/", user_service.UserInfoAction())
 	r.POST("/douyin/user/register/", user_service.UserRegisterAction())
-	r.GET("/douyin/feed/", feed_service.FeedAction())
+
+	//favorite apis
+	//r.GET("/douyin/favorite/list/", favorite_service.GetFavoriteList())
+	//r.POST("/douyin/favorite/action/", favorite_service.PostFavoriteAction())
+
+	//comment apis
+	//r.GET("/douyin/comment/list/", comment_service.GetCommentList())
+	//r.POST("/douyin/comment/action/", comment_service.PostCommentAction())
 
 	// basic apis
 	//apiRouter.GET("/feed/", controller.Feed)
