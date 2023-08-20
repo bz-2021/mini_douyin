@@ -28,7 +28,7 @@ func PostFavoriteAction() gin.HandlerFunc {
 		actionTypeInt64, _ := strconv.ParseInt(actionTypeStr, 10, 64)
 		req.ActionType = int32(actionTypeInt64)
 
-		fmt.Printf("\n req.Token: %v \n req.VideoId: %v \n req.ActionType: %v \n", req.Token, req.VideoId, req.ActionType)
+		//fmt.Printf("\n req.Token: %v \n req.VideoId: %v \n req.ActionType: %v \n", req.Token, req.VideoId, req.ActionType)
 
 		// 调用gRPC服务
 		result, err := client.FavoriteAction(context.Background(), &req)
