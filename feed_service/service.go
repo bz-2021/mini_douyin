@@ -12,6 +12,7 @@ import (
 
 type FeedService struct {
 	video.UnimplementedServiceServer
+
 	DB *gorm.DB
 }
 
