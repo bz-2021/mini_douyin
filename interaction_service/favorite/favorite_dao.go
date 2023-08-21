@@ -147,10 +147,63 @@ func (fs *FavoriteService) DeleteFavoriteRecord(ctx context.Context, req *pb.Fav
 	return nil, nil
 }
 
+// 获取喜欢列表
+func (fs *FavoriteService) getFavoriteListPo(ctx context.Context, po *pb.FavoriteItem) (
+	[]*pb.FavoriteItem, error) {
+
+	//向数据库查询所有数据
+	db := fs.DB.WithContext(ctx)
+	pos := make([]*pb.FavoriteItem, 0)
+	if po.UserId > 0 && po.VideoId <= 0 {
+		db = db.Table("favorite")
+		db = db.Where("user_id = ?", po.UserId)
+	} else {
+		fmt.Println("get list false: Parameter false")
+		return pos, nil
+	}
+	//在favorite表中查找当前用户所有的点赞记录并进行绑定
+	db.Find(&pos) //record : Id  UserId  VideoId
+	if db.Error != nil {
+		fmt.Errorf("select favorite records false: %s", db.Error.Error())
+		return nil, db.Error
+	}
+	return pos, nil
+}
+
 // 构建一个点赞记录
 func (fs *FavoriteService) NewFavoriteItem(ctx context.Context, req *pb.FavoriteActionRequest, userId int64) (*pojo.Favorite, error) {
 	favorite := &pojo.Favorite{}
 	favorite.VideoId = req.VideoId
 	favorite.UserId = userId
 	return favorite, nil
+}
+
+// 获取视频信息
+func (fs *FavoriteService) GetVideoResp(ctx context.Context, video_id int64) (*pb.Video, error) {
+	videoItem := &pojo2.Video{}
+	db := fs.DB.WithContext(ctx)
+	db = db.Table("video").Where("id = ?", video_id).First(&videoItem)
+	fmt.Printf("-----------------------\n videoItem: %v \n", videoItem)
+	if db.RowsAffected == 0 {
+		fmt.Errorf("select false: no video, no video_id equals '%v'", video_id)
+		return nil, nil
+	}
+	author := pb.User{}
+	db = fs.DB.WithContext(ctx)
+	db = db.Table("user").Where("id = ?", videoItem.UserId).First(&author)
+
+	videoRespPo := &pb.Video{}
+	//
+	videoRespPo.Id = videoItem.Id
+	videoRespPo.Author = &author
+	videoRespPo.PlayUrl = videoItem.PlayUrl
+	videoRespPo.CoverUrl = videoItem.CoverUrl
+	videoRespPo.FavoriteCount = int64(videoItem.FavoriteCount)
+	videoRespPo.CommentCount = int64(videoItem.CommentCount)
+	videoRespPo.IsFavorite = true
+	videoRespPo.Title = videoItem.Title
+	//
+	fmt.Printf("\n videoRespPo: %v \n", videoRespPo)
+	fmt.Println("GetVideoResp() 调用成功")
+	return videoRespPo, nil
 }

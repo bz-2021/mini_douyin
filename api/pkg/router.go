@@ -84,7 +84,7 @@ func InitRouter(r *gin.Engine) {
 	r.POST("/douyin/user/register/", user_service.UserRegisterAction())
 
 	//favorite apis
-	//r.GET("/douyin/favorite/list/", favorite_service.GetFavoriteList())
+	r.GET("/douyin/favorite/list/", favorite_service.GetFavoriteList())
 	r.POST("/douyin/favorite/action/", favorite_service.PostFavoriteAction())
 
 	//comment apis
