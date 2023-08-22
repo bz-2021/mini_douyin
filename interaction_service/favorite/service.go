@@ -6,6 +6,8 @@ import (
 	pb "github.com/bz-2021/mini_douyin/interaction_service/favorite/favorite_grpc"
 	user_pojo "github.com/bz-2021/mini_douyin/user_service/pojo"
 	"github.com/bz-2021/mini_douyin/utils"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"strconv"
 )
@@ -83,6 +85,47 @@ func (fs FavoriteService) FavoriteAction(ctx context.Context, req *pb.FavoriteAc
 		StatusCode: 0,
 		StatusMsg:  utils.Succeed,
 	}
+	return resp, nil
+}
+
+func (fs FavoriteService) FavoriteList(ctx context.Context, req *pb.FavoriteListRequest) (
+	*pb.FavoriteListResponse, error) {
+	fmt.Println("rpc方法FavoriteList调用成功，开始处理")
+	item := &pb.FavoriteItem{}
+	item.UserId = req.UserId
+	//	获取喜欢视频列表
+	pos, err := fs.getFavoriteListPo(ctx, item)
+	if err != nil {
+		fmt.Errorf("favorite list get false - getFavoriteListPo() Error: \n %s", err.Error())
+		return nil, status.Errorf(codes.Unavailable, "[Error] Failed to Get Favorite List")
+	}
+
+	resp := &pb.FavoriteListResponse{}
+
+	// 根据列表分别获取用户信息
+	videoList := make([]*pb.Video, len(pos))
+	//each item in pos is a pb.FavoriteItem
+	resp.VideoList = videoList
+
+	if len(videoList) == 0 {
+		return resp, nil
+	}
+
+	// 将用户信息和视频信息组合成Response
+	//each item in pos is a pb.FavoriteItem
+	//po record : Id  UserId  VideoId
+	for i, po := range pos {
+		videoRespPo, vErr := fs.GetVideoResp(ctx, po.VideoId)
+		if vErr != nil {
+			fmt.Errorf(vErr.Error())
+			return nil, vErr
+		}
+		resp.VideoList[i] = videoRespPo
+	}
+
+	// 请求成功
+	resp.StatusCode = 0
+	resp.StatusMsg = utils.Succeed
 	return resp, nil
 }
 
