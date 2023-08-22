@@ -75,6 +75,7 @@ func GetFavoriteList() gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		fmt.Println("result视频列表", result.VideoList)
 		// 处理登录响应
 		if &result.StatusMsg != nil {
 			c.JSON(http.StatusOK, gin.H{

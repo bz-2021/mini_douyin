@@ -2,7 +2,6 @@ package feed_service
 
 import (
 	"context"
-	"fmt"
 	service "github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
 	"github.com/bz-2021/mini_douyin/feed_service/feed_grpc/video"
 	"github.com/bz-2021/mini_douyin/utils"
@@ -53,28 +52,35 @@ func (f *FeedService) FeedAction(ctx context.Context, req *service.FeedRequest) 
 		resp.StatusMsg = &utils.PermissionDenied
 		return
 	}
-	list, err := f.getVideoListByDate(ctx, lastTime)
+	list, err := f.getVideoListByDate(ctx, lastTime, myId)
 	if err != nil {
 		return
 	}
 	videoList := make([]*service.Video, len(list))
-	avatar := "https://cdn.acwing.com/media/user/profile/photo/220156_lg_9ddb2ec392.jpg"
 	for i, v := range list {
 		videoList[i] = &service.Video{
 			Id: v.Id,
 			Author: &service.User{
-				Id:     1,
-				Avatar: &avatar,
+				Id:              v.Author.ID,
+				Avatar:          &list[i].Author.Avatar,
+				Name:            v.Author.Name,
+				FollowCount:     v.Author.FollowCount,
+				FollowerCount:   v.Author.FollowerCount,
+				IsFollow:        v.Author.IsFollow,
+				BackgroundImage: &list[i].Author.BackgroundImage,
+				Signature:       &list[i].Author.Signature,
+				TotalFavorited:  v.Author.TotalFavorite,
+				WorkCount:       v.Author.WorkCount,
+				FavoriteCount:   v.Author.FavoriteCount,
 			},
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,
-			FavoriteCount: int64(v.FavoriteCount),
-			CommentCount:  int64(v.CommentCount),
-			IsFavorite:    false,
+			FavoriteCount: v.FavoriteCount,
+			CommentCount:  v.CommentCount,
+			IsFavorite:    v.IsFavorite,
 			Title:         v.Title,
 		}
 	}
-	fmt.Println("videoList在这里", videoList)
 	return &service.FeedResponse{
 		StatusCode: 0,
 		StatusMsg:  &utils.Succeed,
