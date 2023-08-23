@@ -183,7 +183,6 @@ func (fs *FavoriteService) GetVideoResp(ctx context.Context, video_id int64) (*p
 	videoItem := &pojo2.Video{}
 	db := fs.DB.WithContext(ctx)
 	db = db.Table("video").Where("id = ?", video_id).First(&videoItem)
-	fmt.Printf("-----------------------\n videoItem: %v \n", videoItem)
 	if db.RowsAffected == 0 {
 		fmt.Errorf("select false: no video, no video_id equals '%v'", video_id)
 		return nil, nil

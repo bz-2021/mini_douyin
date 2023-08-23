@@ -45,7 +45,7 @@ func (m *Mysql) GetDB(db *gorm.DB) (*gorm.DB, error) {
 
 func (m *Mysql) connectDefaultDB() (*gorm.DB, error) {
 	// root:root@tcp(127.0.0.1:3306)/gorm?
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", m.Username, m.Password, m.Host, m.Port, m.DBName, m.Timeout)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&loc=Local&timeout=%s", m.Username, m.Password, m.Host, m.Port, m.DBName, m.Timeout)
 	//连接MYSQL, 获得DB类型实例，用于后面的数据库读写操作。
 	db, err := gorm.Open(mySQL.Open(dsn))
 	if err != nil {
