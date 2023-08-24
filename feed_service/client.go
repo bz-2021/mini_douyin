@@ -1,11 +1,13 @@
 package feed_service
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	api "github.com/bz-2021/mini_douyin/api/client"
 	pb "github.com/bz-2021/mini_douyin/feed_service/feed_grpc"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -45,5 +47,40 @@ func FeedAction() gin.HandlerFunc {
 		}
 		fmt.Println(result, err)
 	}
+}
 
+func PublishAction() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := api.C.GetFeedClient()
+		var req pb.PublishActionRequest
+		var err error
+		var b bytes.Buffer
+
+		data, err := c.FormFile("data")
+		file, err := data.Open()
+
+		_, err = io.Copy(&b, file)
+
+		req.Data = b.Bytes()
+		req.Token = c.Query("token")
+		req.Title = c.Query("title")
+
+		// 调用gRPC服务
+		result, err := client.PublishAction(context.Background(), &req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status_msg": "Failed to call gRPC publish_service"})
+			fmt.Println(err)
+			return
+		}
+		//处理登录响应
+		if result.StatusMsg != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"status_code": result.StatusCode,
+				"status_msg":  result.StatusMsg,
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status_msg": result.StatusMsg})
+		}
+		fmt.Println(result, err)
+	}
 }

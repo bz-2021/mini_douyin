@@ -94,11 +94,30 @@ func InitRouter(r *gin.Engine) {
 		}
 	}()
 
+	////PublishService
+	go func() {
+		// 创建gRPC服务
+		grpcServer := grpc.NewServer()
+
+		// 注册PublishService服务
+		video.RegisterServiceServer(grpcServer, feed_service.NewFeedService())
+		fmt.Println("grpc server running : 8087 ")
+
+		listen, err := net.Listen("tcp", ":8087")
+		if err != nil {
+			grpclog.Fatalf("Failed to listen: %v", err)
+		}
+
+		if err := grpcServer.Serve(listen); err != nil {
+
+		}
+	}()
+
 	//获取请求参数，调用grpc客户端
 
 	//视频feed流 api
 	r.GET("/douyin/feed/", feed_service.FeedAction())
-
+	r.POST("/douyin/publish/action/", feed_service.PublishAction())
 	//user apis
 	r.POST("/douyin/user/login/", user_service.UserLoginAction())
 	r.GET("/douyin/user/", user_service.UserInfoAction())

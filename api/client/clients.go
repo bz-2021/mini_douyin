@@ -19,8 +19,8 @@ type Clients struct {
 	FeedClient     video.ServiceClient
 	FavoriteClient favorite.ServiceClient
 	CommentClient  comment.ServiceClient
-
-	lock sync.Mutex
+	PublishClient  video.ServiceClient
+	lock           sync.Mutex
 }
 
 func (c *Clients) GetServiceClient() user.ServiceClient {
@@ -85,4 +85,20 @@ func (c *Clients) GetCommentClient() comment.ServiceClient {
 		c.CommentClient = client
 	}
 	return c.CommentClient
+}
+
+func (c *Clients) GetPublishClient() video.ServiceClient {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	if c.PublishClient == nil {
+		addr := ":8087"
+		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			panic("创建连接失败")
+		}
+		client := video.NewServiceClient(conn)
+		c.PublishClient = client
+	}
+	return c.PublishClient
 }

@@ -58,3 +58,10 @@ func (u *FeedService) getUserById(ctx context.Context, id int64) (user *user_poj
 	}
 	return
 }
+
+func (u *FeedService) insertVideo(ctx context.Context, id string, title string, playURL string, coverURL string, createDate string) {
+	db := u.DB.WithContext(ctx)
+	db = db.Table("video")
+	video := pojo.Video{UserId: id, Title: title, PlayUrl: playURL, CoverUrl: coverURL, CreateDate: createDate}
+	db.Create(&video)
+}
